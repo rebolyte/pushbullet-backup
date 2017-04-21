@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="description" content="Easily save and back up all of your content from Pushbullet in the browser.">
+	<meta name="keywords" content="pushbullet, save, export, download, backup, back, up, webapp, script">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Pushbullet Backup</title>
+	<link rel="stylesheet" href="https://unpkg.com/tachyons@4.7.0/css/tachyons.min.css"/>
+	<style>
+		body {
+			color: #212121;
+			font-family: BlinkMacSystemFont, -apple-system, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+			-webkit-font-smoothing: antialiased;
+			-moz-osx-font-smoothing: grayscale;
+			letter-spacing: 0.02em;
+		}
+		.header {
+			background-color: #4ab367;
+			color: white;
+		}
+	</style>
+</head>
+<body>
+
+
+<div class="flex items-center pv3 ph4 header">
+	<span class="lh-title f2">Pushbullet Backup</span>
+</div>
+
+<form id="theForm" class="pa4 black-80">
+	<div class="measure">
+		<label for="token" class="f6 b db mb2">API Access Token</label>
+		<input id="token" name="apiToken" class="input-reset ba b--black-20 pa2 mb2 db w-100" type="text" aria-describedby="token-desc">
+		<small id="token-desc" class="f6 black-60 db mb2">You can find this in Pushbullet &rarr; My Account &rarr; Create Access Token</small>
+	</div>
+	<div class="measure pt2">
+		<label for="outputFormat" class="f6 b db mb2">Output format:</label>
+		<div>
+			<input type="radio" name="outputFormat" value="html" id="htmlRad" checked>
+			<label for="htmlRad">HTML</label>
+		</div>
+		<div class="pt1">
+			<input type="radio" name="outputFormat" value="json" id="jsonRad">
+			<label for="jsonRad">JSON</label>
+		</div>
+		<div class="pt1">
+			<input type="radio" name="outputFormat" value="csv" id="csvRad">
+			<label for="csvRad">CSV</label>
+		</div>
+	</div>
+	<div class="measure pt3">
+		<input class="b ph3 pv2 input-reset ba b--black bg-transparent pointer f6 dib" type="submit" value="Begin the process">
+	</div>
+</form>
+
+<div id="downloadLinkContainer" class="pa4"></div>
+
+<div class="pa4">
+	<p class="f6 i gray">This is not an official Pushbullet product, and is in no way associated with their company.</p>
+	<p class="f6 i gray">See the sourcecode on <a href="https://github.com/rebolyte">GitHub</a>.</p>
+</div>
+
+<script>
+	// thanks @davidgilbertson
+	var scripts = [
+		'https://unpkg.com/axios@0.16.1/dist/axios.min.js',
+		'https://cdnjs.cloudflare.com/ajax/libs/dot/1.1.0/doT.min.js',
+		'https://unpkg.com/comma-separated-values@3.6.4/csv.min.js',
+		'main.js'
+	];
+	var newBrowser = (
+		'Promise' in window &&
+		'assign' in Object
+	);
+	if (!newBrowser) {
+		scripts.unshift(
+			'https://unpkg.com/es6-object-assign@1.1.0/dist/object-assign.min.js',
+			'https://unpkg.com/native-promise-only@0.8.1/lib/npo.src.js'
+		)
+	}
+	scripts.forEach(function (src) {
+		var scriptEl = document.createElement('script');
+		scriptEl.src = src;
+		// https://www.html5rocks.com/en/tutorials/speed/script-loading/
+		scriptEl.async = false;
+		document.head.appendChild(scriptEl);
+	});
+</script>
+	
+</body>
+</html>
