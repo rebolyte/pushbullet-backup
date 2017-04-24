@@ -25,9 +25,9 @@
 	};
 
 	var pushesArr = [];
-	var n = 0;
 
 	function getPushes(params, token) {
+		var n = 0;
 		pushesArr = [];
 		return new Promise(function (resolve, reject) {
 			var recurse = function (params) {
@@ -40,13 +40,12 @@
 				.then(function (resp) {
 					pushesArr = pushesArr.concat(resp.data.pushes);
 					n++;
-					console.log('headers', resp.headers);
-					console.log(new Date().toISOString(), 'got ' + resp.data.pushes.length + ' pushes');
-					console.log('total', pushesArr.length, 'n = ', n);
-					if ((n < 2) && (typeof resp.data.cursor !== 'undefined')) {
+					$('#requestNumContainer').innerHTML = n + ' requests made';
+					// for debugging: (n < 2) && 
+					if (typeof resp.data.cursor !== 'undefined') {
 						return recurse(Object.assign({}, BASE_PARAMS, { cursor: resp.data.cursor }));
 					} else {
-						resolve(pushesArr);
+						resolve(pushesArr.reverse());
 					}
 				})
 				.catch(function (err) {
@@ -131,15 +130,6 @@
 		return formValid;
 	}
 
-	var testData = {
-		foo: 'with doT',
-		pushes: [
-			{ name: 'push numbah 1', date: 'today' },
-			{ name: 'elemental transition', date: 'yesterday' },
-			{ name: 'foo bar ja man', date: 'long ago' }
-		]
-	};
-
 	function showDownloadLink(contents, ext) {
 		var linkContainer = document.getElementById('downloadLinkContainer');
 
@@ -156,7 +146,7 @@
 		.then(function (resp) {
 			var pageTemplate = resp.data;
 			var templateFn = doT.template(pageTemplate);
-			var result = templateFn(pushes);
+			var result = templateFn({ pushes: pushes });
 
 			showDownloadLink(result, '.html');
 		})
@@ -179,11 +169,12 @@
 		$('#theForm').on('submit', function (evt) {
 			evt.preventDefault();
 
+			$('#submitBtn').disabled = true;
+
 			// TODO: Process dates from Unix epoch to ISO
 			if (validateForm(this)) {
 				getPushes(BASE_PARAMS, $('#theForm').apiToken.value).then(function (pushes) {
 					console.log('all done');
-					console.log(JSON.stringify(pushes));
 					switch ($('#theForm').outputFormat.value) {
 						case 'html':
 							getHtmlFile(pushes);
@@ -198,8 +189,11 @@
 							throw new Error('Somehow we got a weird thing');
 							break;
 					}
+					$('#submitBtn').disabled = false;
 				}).catch(function (err) {
+					alert('Oops, there was an error.');
 					console.error(err);
+					$('#submitBtn').disabled = false;
 				});
 			};
 		});
